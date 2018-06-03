@@ -21,7 +21,7 @@ Page({
     nowTemp: '',
     nowWeather: '',
     nowWeatherBackground: '',
-    forecast: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    hourlyWeather: []
   },
   onLoad() {
     this.getNow()
@@ -38,23 +38,42 @@ Page({
         'city': '南京市'
       },
       success: res => {
-        console.log(res.data);
-        let result = res.data.result;
-        let temp = result.now.temp;
-        let weather = result.now.weather;
-        this.setData({
-          nowTemp: temp + "˚",
-          nowWeather: weatherMap[weather],
-          nowWeatherBackground: '/images/' + weather + '-bg.png'
-        });
-        wx.setNavigationBarColor({
-          frontColor: '#000000',
-          backgroundColor: weatherColorMap[weather],
-        })
+        let result = res.data.result
+        this.setNow(result)
+        this.setHourlyWeather(result)
       },
       complete: () => {
         callback && callback()
       }
+    })
+  },
+  setNow(result) {
+    let weather = result.now.weather
+    let temp = result.now.temp
+    this.setData({
+      nowTemp: temp + "˚",
+      nowWeather: weatherMap[weather],
+      nowWeatherBackground: '/images/' + weather + '-bg.png'
+    })
+    wx.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: weatherColorMap[weather],
+    })
+  }, 
+  setHourlyWeather(result) {
+    let nowHour = new Date().getHours()
+    let forecast = result.forecast
+    let hourlyWeather = []
+    for (let i = 0; i < 8; i += 1) {
+      hourlyWeather.push({
+        time: (i * 3 + nowHour) % 24 + '时',
+        iconPath: '/images/' + forecast[i].weather + '-icon.png',
+        temp: forecast[i].temp + '˚'
+      })
+    }
+    hourlyWeather[0].time = '现在'
+    this.setData({
+      hourlyWeather: hourlyWeather
     })
   }
 })
