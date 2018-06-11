@@ -76,3 +76,33 @@
   font-size: 40rpx;
   line-height: 56rpx;
 }
+
+.day-weather {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0rpx;
+  left: 40rpx;
+  right: 40rpx;
+  height: 90rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.1);
+  font-size: 30rpx;
+  line-height: 42rpx;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.day-text {
+  font-size: 30rpx;
+  line-height: 42rpx;
+}
+
+.temp-text {
+  padding-right: 30rpx; 
+  text-align: right;
+  flex-grow: 1;
+}
+
+.arrow-icon {
+  width: 13rpx;
+  height: 24rpx;
+}
