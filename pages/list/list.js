@@ -9,9 +9,11 @@ Page({
     this.getWeatherData()
   },
   onPullDownRefresh() {
-    this.getWeatherData()
+    this.getWeatherData(() => {
+      wx.stopPullDownRefresh()
+    })
   },
-  getWeatherData() {
+  getWeatherData(callback) {
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/future',
       data: {
@@ -36,6 +38,9 @@ Page({
         this.setData({
           daysWeather: daysWeather
         })
+      },
+      complete: () => {
+        callback && callback()
       }
     })
   }
