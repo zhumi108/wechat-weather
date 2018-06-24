@@ -3,9 +3,13 @@ const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '
 
 Page({
   data: {
-    daysWeather:[]
+    daysWeather:[],
+    city: ''
   },
-  onLoad() {
+  onLoad(options) {
+    this.setData({
+      city: options.city
+    })
     this.getWeatherData()
   },
   onPullDownRefresh() {
@@ -17,7 +21,7 @@ Page({
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/future',
       data: {
-        'city': '南京市',
+        'city': this.data.city,
         'time': new Date().getTime().toLocaleString()
       },
       success: res => {
