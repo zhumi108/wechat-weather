@@ -20,10 +20,6 @@ const UNPROMPTED = 0
 const UNANTHENTED = 1
 const AUTHENED = 2
 
-const UNPROMPTED_TIPS = "点击获取当前位置"
-const UNANTHENTED_TIPS = "点击开启位置权限"
-const AUTHENED_TIPS = ""
-
 var QQMapWX = require('../../libs/qqmap-wx-jssdk.js');
 
 Page({
@@ -35,12 +31,28 @@ Page({
     todayDate: '',
     todayTemp: '',
     city: '广州市', 
-    locationTipsText: UNPROMPTED_TIPS,
     locationAuthType: UNPROMPTED
   },
   onLoad() {
     this.qqmapsdk = new QQMapWX({
       key: 'CTSBZ-ZF6A6-WQESR-EGTND-6ZIOJ-4VF57'
+    })
+    wx.getSetting({
+      success: res=> {
+        let auth = res.authSetting['scope.userLocation']
+        let authType = auth ? AUTHENED : (auth === false) ? UNANTHENTED : UNPROMPTED
+        this.setData({
+          locationAuthType: authType
+        })
+        if (auth) {
+          this.getCityAndWeather()
+        } else {
+          this.getNow()
+        }
+      },
+      fail: res=> {
+        this.getNow()
+      }
     })
     this.getNow()
   },
@@ -114,19 +126,18 @@ Page({
       wx.openSetting({
         success: res => {
           if (res.authSetting['scope.userLocation']) {
-            this.getLocation()
+            this.getCityAndWeather()
           }
         }
       })
     else
-      this.getLocation()
+      this.getCityAndWeather()
   },
-  getLocation() {
+  getCityAndWeather() {
     wx.getLocation({
       success: res => {
         this.setData({
-          locationAuthType: AUTHENED,
-          locationTipsText: AUTHENED_TIPS
+          locationAuthType: AUTHENED
         })
         this.qqmapsdk.reverseGeocoder({
           location: {
@@ -136,8 +147,7 @@ Page({
           success: res => {
             let city = res.result.address_component.city
             this.setData({
-              city: city,
-              locationTipsText: ''
+              city: city
             })
             this.getNow()
           }
@@ -145,8 +155,7 @@ Page({
       },
       fail: () => {
         this.setData({
-          locationAuthType: UNANTHENTED,
-          locationTipsText: UNANTHENTED_TIPS
+          locationAuthType: UNANTHENTED
         })
       }
     })
